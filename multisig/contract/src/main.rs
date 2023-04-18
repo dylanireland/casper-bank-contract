@@ -16,14 +16,14 @@ use casper_contract::{
     contract_api::{runtime, storage, system, account},
     unwrap_or_revert::UnwrapOrRevert,
 };
-use casper_types::{ApiError, CLType, EntryPointAccess, EntryPointType, U512, EntryPoints, EntryPoint, Parameter, contracts::NamedKeys};
+use casper_types::{ApiError, CLType, EntryPointAccess, EntryPointType, U512, EntryPoints, EntryPoint, Parameter, contracts::NamedKeys, CLValue};
 
 /// An error enum which can be converted to a `u16` so it can be returned as an `ApiError::User`.
 #[repr(u16)]
 enum Error {
-    TransferFailed = 0,
-    CouldntGetPurseKey = 1,
-    CouldntTurnPurseKeyIntoURef = 2,
+    CouldntGetPurseKey = 0,
+    CouldntTurnPurseKeyIntoURef = 1,
+    CouldntReturnDepositPurse = 2
 }
 
 impl From<Error> for ApiError {
@@ -33,23 +33,18 @@ impl From<Error> for ApiError {
 }
 
 #[no_mangle]
-pub extern "C" fn deposit() {
-    let amount: U512 = runtime::get_named_arg("amount");
+pub extern "C" fn get_deposit_purse() {
     let purse = runtime::get_key("purse").unwrap_or_revert_with(Error::CouldntGetPurseKey).into_uref().unwrap_or_revert_with(Error::CouldntTurnPurseKeyIntoURef);
-
-    system::transfer_from_purse_to_purse(account::get_main_purse(), purse, amount, None).unwrap_or_revert_with(Error::TransferFailed);
+    runtime::ret(CLValue::from_t(purse.into_add()).unwrap_or_revert_with(Error::CouldntReturnDepositPurse));
 }
 
 #[no_mangle]
 pub extern "C" fn call() {
     let mut entry_points = EntryPoints::new();
 
-    let mut vec = Vec::new();
-    vec.push(Parameter::new("amount", CLType::U512));
-
     entry_points.add_entry_point(EntryPoint::new(
-        "deposit",
-        vec,
+        "get_deposit_purse",
+        Vec::new(),
         CLType::Unit,
         EntryPointAccess::Public,
         EntryPointType::Contract,
