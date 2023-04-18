@@ -1,0 +1,5 @@
+multisig/tests/
+multisig/contract/target/
+keys/
+*.md
+.DS_Store
