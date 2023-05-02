@@ -5,7 +5,7 @@ use casper_contract::{
     contract_api::{runtime, system, account},
     unwrap_or_revert::UnwrapOrRevert,
 };
-use casper_types::{U512, RuntimeArgs, URef, ContractHash, Key};
+use casper_types::{U512, RuntimeArgs, ContractHash, Key};
 
 #[no_mangle]
 pub extern "C" fn call() {
@@ -14,7 +14,16 @@ pub extern "C" fn call() {
     .into_hash()
     .map(|hash| ContractHash::new(hash))
     .unwrap();
-    let deposit_purse: URef = runtime::call_contract(contract_hash, "get_deposit_purse", RuntimeArgs::new());
 
-    system::transfer_from_purse_to_purse(account::get_main_purse(), deposit_purse, amount, None).unwrap_or_revert();
+    let new_purse = system::create_purse();
+
+    system::transfer_from_purse_to_purse(account::get_main_purse(), new_purse, amount, None).unwrap_or_revert();
+
+    let mut runtime_args = RuntimeArgs::new();
+    runtime_args.insert("purse", new_purse).unwrap_or_revert();
+    runtime_args.insert("caller", runtime::get_caller()).unwrap_or_revert();
+
+    runtime::call_contract::<()>(contract_hash, "add_to_ledger", runtime_args);
+
+    
 }

@@ -1,3 +1,0 @@
-cargo:rerun-if-changed=build/main.rs
-cargo:rustc-env=TYPENUM_BUILD_CONSTS=/Users/dylan/Desktop/CASPER/YOUTUBE/7_alt/multisig/client/target/wasm32-unknown-unknown/release/build/typenum-a44964a79688d027/out/consts.rs
-cargo:rustc-env=TYPENUM_BUILD_OP=/Users/dylan/Desktop/CASPER/YOUTUBE/7_alt/multisig/client/target/wasm32-unknown-unknown/release/build/typenum-a44964a79688d027/out/op.rs
