@@ -7,7 +7,8 @@ build-contract:
 
 build-client:
 	cd client && cargo build --release --target wasm32-unknown-unknown
-	wasm-strip client/target/wasm32-unknown-unknown/release/contract.wasm 2>/dev/null | true
+	wasm-strip client/target/wasm32-unknown-unknown/release/deposit.wasm 2>/dev/null | true
+	wasm-strip client/target/wasm32-unknown-unknown/release/withdraw.wasm 2>/dev/null | true
 
 test: build-contract
 	mkdir -p tests/wasm
