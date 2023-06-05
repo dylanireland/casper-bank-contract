@@ -1,0 +1,6 @@
+tests/
+contract/target/
+client/target/
+keys/
+7.md
+.DS_Store
